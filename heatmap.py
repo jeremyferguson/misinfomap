@@ -1,9 +1,9 @@
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import json
+import json, datetime as dt
 
-with open('C:\\Users\\David\\Desktop\\Hackathon\\covidstatesdaily.json') as f:
+with open('covidstatesdaily.json') as f:
     #data = json.load(f)
     pandaData = pd.read_json(f)
 
@@ -37,10 +37,11 @@ for frame in dataFramArr:
     colorbar_title = "Confirmed Cases",   
     ))
 steps = []
-for i in range(len(dataFramArr)):
+for i in range(len(dataFramArr)-1,-1,-1):
+    date = dt.date(2020,4,25) + dt.timedelta(-i-1)
     step = dict(method='restyle',
                 args=['visible', [False] * int((len(dataFramArr)))],
-                label='Date {}'.format(i + 20200122))
+                label='{}/{}'.format(date.month, date.day))
     step['args'][1][i] = True
     steps.append(step)
 #print(steps)
