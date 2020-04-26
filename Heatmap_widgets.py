@@ -60,14 +60,7 @@ with open('covidstatesdaily.json') as f:
     #data = json.load(f)
     pandaData = pd.read_json(f)
 
-fig = go.FigureWidget(data=[go.Choropleth(
-    locations=pandaData[:50]['state'], # Spatial coordinates
-    z = pandaData[:50]['positive'], # Data to be color-coded
-    locationmode = 'USA-states', # set of locations match entries in `locations`
-    colorscale = 'Reds',
-    colorbar_title = "Confirmed Cases",
-    
-)])
+fig = go.FigureWidget()
 dataFramArr = []
 mydata = pd.DataFrame(columns=['date','state','positive'])
 currDate = ""
@@ -84,13 +77,20 @@ for index, row in pandaData.iterrows():
 for frame in dataFramArr:
     trace = go.Choropleth(
     locations=frame['state'], # Spatial coordinates
-    z = frame['positive'], # Data to be color-coded
+    z = np.log10(frame['positive']), # Data to be color-coded
     locationmode = 'USA-states', # set of locations match entries in `locations`
     colorscale = 'Reds',
-    colorbar_title = "Confirmed Cases",   
+    text = frame['positive'],
+    zmin = 1,
+    zmax = 6,
+    colorbar=dict(title='Confirmed Cases',
+        tickvals = [2,3,4,5,5.5],
+        ticktext = ['100','1000','10000','100000','300000'],
+    )   
     )
     #trace.on_hover(hover_fn)
-    fig.add_trace(trace)  
+    fig.add_trace(trace)
+    
 steps = []
 for i in range(len(dataFramArr)-1,-1,-1):
     date = dt.date(2020,4,25) + dt.timedelta(-i-1)
